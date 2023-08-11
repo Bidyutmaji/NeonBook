@@ -1,114 +1,234 @@
-import Head from 'next/head'
-import Image from 'next/image'
-import { Inter } from 'next/font/google'
-import styles from '@/styles/Home.module.css'
+import {
+  createStyles,
+  Navbar,
+  TextInput,
+  Code,
+  UnstyledButton,
+  Badge,
+  Text,
+  Group,
+  ActionIcon,
+  Tooltip,
+  rem,
+  Title,
+} from '@mantine/core';
+import {
+  IconBulb,
+  IconUser,
+  IconCheckbox,
+  IconSearch,
+  IconPlus,
+  IconSelector,
+  IconSwitchHorizontal,
+  IconLogin,
+} from '@tabler/icons-react';
+import Link from 'next/link';
+import { modals } from '@mantine/modals'
+import Login from './components/auth/login';
+import axios from 'axios';
+import { AxiosConfig, BASEURL } from '@/config';
+const useStyles = createStyles((theme) => ({
+  navbar: {
+    paddingTop: 0,
+  },
 
-const inter = Inter({ subsets: ['latin'] })
+  section: {
+    marginLeft: `calc(${theme.spacing.md} * -1)`,
+    marginRight: `calc(${theme.spacing.md} * -1)`,
+    marginBottom: theme.spacing.md,
+
+    '&:not(:last-of-type)': {
+      borderBottom: `${rem(1)} solid ${theme.colorScheme === 'dark' ? theme.colors.dark[4] : theme.colors.gray[3]
+        }`,
+    },
+  },
+
+  searchCode: {
+    fontWeight: 700,
+    fontSize: rem(10),
+    backgroundColor: theme.colorScheme === 'dark' ? theme.colors.dark[7] : theme.colors.gray[0],
+    border: `${rem(1)} solid ${theme.colorScheme === 'dark' ? theme.colors.dark[7] : theme.colors.gray[2]
+      }`,
+  },
+
+  mainLinks: {
+    paddingLeft: `calc(${theme.spacing.md} - ${theme.spacing.xs})`,
+    paddingRight: `calc(${theme.spacing.md} - ${theme.spacing.xs})`,
+    paddingBottom: theme.spacing.md,
+  },
+
+  mainLink: {
+    display: 'flex',
+    alignItems: 'center',
+    width: '100%',
+    fontSize: theme.fontSizes.xs,
+    padding: `${rem(8)} ${theme.spacing.xs}`,
+    borderRadius: theme.radius.sm,
+    fontWeight: 500,
+    color: theme.colorScheme === 'dark' ? theme.colors.dark[0] : theme.colors.gray[7],
+
+    '&:hover': {
+      backgroundColor: theme.colorScheme === 'dark' ? theme.colors.dark[6] : theme.colors.gray[0],
+      color: theme.colorScheme === 'dark' ? theme.white : theme.black,
+    },
+  },
+
+  mainLinkInner: {
+    display: 'flex',
+    alignItems: 'center',
+    flex: 1,
+  },
+
+  mainLinkIcon: {
+    marginRight: theme.spacing.sm,
+    color: theme.colorScheme === 'dark' ? theme.colors.dark[2] : theme.colors.gray[6],
+  },
+
+  mainLinkBadge: {
+    padding: 0,
+    width: rem(20),
+    height: rem(20),
+    pointerEvents: 'none',
+  },
+
+  collections: {
+    paddingLeft: `calc(${theme.spacing.md} - ${rem(6)})`,
+    paddingRight: `calc(${theme.spacing.md} - ${rem(6)})`,
+    paddingBottom: theme.spacing.md,
+  },
+
+  collectionsHeader: {
+    paddingLeft: `calc(${theme.spacing.md} + ${rem(2)})`,
+    paddingRight: theme.spacing.md,
+    marginBottom: rem(5),
+  },
+
+  collectionLink: {
+    display: 'block',
+    padding: `${rem(8)} ${theme.spacing.xs}`,
+    textDecoration: 'none',
+    borderRadius: theme.radius.sm,
+    fontSize: theme.fontSizes.xs,
+    color: theme.colorScheme === 'dark' ? theme.colors.dark[0] : theme.colors.gray[7],
+    lineHeight: 1,
+    fontWeight: 500,
+
+    '&:hover': {
+      backgroundColor: theme.colorScheme === 'dark' ? theme.colors.dark[6] : theme.colors.gray[0],
+      color: theme.colorScheme === 'dark' ? theme.white : theme.black,
+    },
+  },
+}));
+
+const links = [
+  { icon: IconBulb, label: 'Activity', notifications: 3 },
+  { icon: IconCheckbox, label: 'Tasks', notifications: 4 },
+  { icon: IconUser, label: 'Contacts' },
+];
+
+const collections = [
+  { emoji: '👍', label: 'HK Sales' },
+  { emoji: '🚚', label: 'Deliveries' },
+  { emoji: '💸', label: 'Discounts' },
+  { emoji: '💰', label: 'Profits' },
+  { emoji: '✨', label: 'Reports' },
+  { emoji: '🛒', label: 'Orders' },
+  { emoji: '📅', label: 'Events' },
+  { emoji: '🙈', label: 'Debts' },
+  { emoji: '💁‍♀️', label: 'Customers' },
+];
 
 export default function Home() {
+  const { classes } = useStyles();
+  // console.log(theme);
+  
+  const mainLinks = links.map((link) => (
+    <UnstyledButton key={link.label} className={classes.mainLink}>
+      <div className={classes.mainLinkInner}>
+        <link.icon size={20} className={classes.mainLinkIcon} stroke={1.5} />
+        <span>{link.label}</span>
+      </div>
+      {link.notifications && (
+        <Badge size="sm" variant="filled" className={classes.mainLinkBadge}>
+          {link.notifications}
+        </Badge>
+      )}
+    </UnstyledButton>
+  ));
+  
+  const collectionLinks = collections.map((collection) => (
+    <Link
+      href="/"
+      onClick={(event) => event.preventDefault()}
+      key={collection.label}
+      className={classes.collectionLink}
+    >
+      <span style={{ marginRight: rem(9), fontSize: rem(16) }}>{collection.emoji}</span>{' '}
+      {collection.label}
+    </Link>
+  ));
+
+  axios.get(`${BASEURL}/user/`,  AxiosConfig).then( res => {
+    console.log(res);
+    
+  })
+  console.log(AxiosConfig)
   return (
-    <>
-      <Head>
-        <title>Create Next App</title>
-        <meta name="description" content="Generated by create next app" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-      <main className={`${styles.main} ${inter.className}`}>
-        <div className={styles.description}>
-          <p>
-            Get started by editing&nbsp;
-            <code className={styles.code}>pages/index.tsx</code>
-          </p>
-          <div>
-            <a
-              href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              By{' '}
-              <Image
-                src="/vercel.svg"
-                alt="Vercel Logo"
-                className={styles.vercelLogo}
-                width={100}
-                height={24}
-                priority
-              />
-            </a>
-          </div>
+    <Navbar height={700} width={{ sm: 300 }} p="md" className={classes.navbar}>
+      <Navbar.Section className={classes.section}>
+        <Group position="apart">
+          <Title order={3} align='center' color='blue.7' style={{ paddingLeft: rem(18) }}> HAARE KRSNA</Title>
+          <Code sx={{ fontWeight: 700 }}>v3.1.2</Code>
+        </Group>
+      </Navbar.Section>
+
+      <TextInput
+        placeholder="Search"
+        size="xs"
+        icon={<IconSearch size="0.8rem" stroke={1.5} />}
+        rightSectionWidth={70}
+        rightSection={<Code className={classes.searchCode}>Ctrl + K</Code>}
+        styles={{ rightSection: { pointerEvents: 'none' } }}
+        mb="sm"
+      />
+
+      <Navbar.Section className={classes.section}>
+        <div className={classes.mainLinks}>{mainLinks}</div>
+      </Navbar.Section>
+
+      <Navbar.Section className={classes.section}>
+        <Group className={classes.collectionsHeader} position="apart">
+          <Text size="xs" weight={500} color="dimmed">
+            Collections
+          </Text>
+          <Tooltip label="Create collection" withArrow position="right">
+            <ActionIcon variant="default" size={18}>
+              <IconPlus size="0.8rem" stroke={1.5} />
+            </ActionIcon>
+          </Tooltip>
+        </Group>
+        <div className={classes.collections}>{collectionLinks}</div>
+      
+      </Navbar.Section>
+      
+      <Navbar.Section >
+        <UnstyledButton className={classes.mainLink} w={'full'} 
+          onClick={()=>{
+            modals.open({
+              title:(<Text size="lg" weight={500}>
+              Welcome to NeonBook,
+            </Text>),
+              children:(
+                <Login/>
+              )
+            })
+          }}>
+        <div className={classes.mainLinkInner}>
+          <IconLogin size={20} className={classes.mainLinkIcon} stroke={1.5} />
+          <span>{'Login'}</span>
         </div>
-
-        <div className={styles.center}>
-          <Image
-            className={styles.logo}
-            src="/next.svg"
-            alt="Next.js Logo"
-            width={180}
-            height={37}
-            priority
-          />
-        </div>
-
-        <div className={styles.grid}>
-          <a
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <h2>
-              Docs <span>-&gt;</span>
-            </h2>
-            <p>
-              Find in-depth information about Next.js features and&nbsp;API.
-            </p>
-          </a>
-
-          <a
-            href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <h2>
-              Learn <span>-&gt;</span>
-            </h2>
-            <p>
-              Learn about Next.js in an interactive course with&nbsp;quizzes!
-            </p>
-          </a>
-
-          <a
-            href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <h2>
-              Templates <span>-&gt;</span>
-            </h2>
-            <p>
-              Discover and deploy boilerplate example Next.js&nbsp;projects.
-            </p>
-          </a>
-
-          <a
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <h2>
-              Deploy <span>-&gt;</span>
-            </h2>
-            <p>
-              Instantly deploy your Next.js site to a shareable URL
-              with&nbsp;Vercel.
-            </p>
-          </a>
-        </div>
-      </main>
-    </>
-  )
+      </UnstyledButton>
+      </Navbar.Section>
+    </Navbar>
+  );
 }
